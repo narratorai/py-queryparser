@@ -7,7 +7,7 @@ A python query parser for Redshift
 1. Clone this repo:
 
 ```
-git clone --recursive git@github.com:narratorai/py-queryparser.git
+git clone git@github.com:narratorai/py-queryparser.git
 ```
 
 

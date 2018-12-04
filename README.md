@@ -7,7 +7,7 @@ A python query parser for Redshift
 1. Clone this repo:
 
 ```
-git clone --recursive git@github.com:narratorai/py-queryparser.git
+git clone git@github.com:narratorai/py-queryparser.git
 ```
 
 
@@ -16,6 +16,8 @@ git clone --recursive git@github.com:narratorai/py-queryparser.git
 #### Parse a query 
 
 ```
+import queryParser
+
 (_ , query_object) = queryParser.parse_query(query)
 ```
 
@@ -23,6 +25,8 @@ git clone --recursive git@github.com:narratorai/py-queryparser.git
 #### Convert query object to query 
 
 ```
+import queryParser
+
 query = queryParser.obj_to_query(query)
 print(query)
 ```
@@ -32,6 +36,8 @@ print(query)
 This just parses the query then generates the query from the output object
 
 ```
+import queryParser
+
 queryParser.format_query(query)
 ```
 

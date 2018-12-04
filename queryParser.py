@@ -97,13 +97,10 @@ def replace_space_in_quotes(text):
 		if t == "'":
 			in_quotes = not in_quotes
 
-		if in_quotes and t ==' ':
+		if in_quotes and t == ' ':
 			new_text.append('--')
-		elif not in_quotes and t in ('(', ')',):
-			if t == '(':
-				new_text.append(' ( ')
-			else:
-				new_text.append(' ) ')
+		elif not in_quotes and t in ('(', ')', ','):
+			new_text.append(' {} '.format(t))
 		else:
 			new_text.append(t)
 
@@ -151,31 +148,31 @@ def parse_column(components):
 
 	# get the definition and name
 	for ii, s in enumerate(components):
-		#print('cp - ' + s)
-		#print(parenthsis)
-		#print(is_in_quotes)
-		# find the end of the columns
+		print('cp - ' + s)
+		print(parenthsis)
+		print(is_in_quotes)
 
 		(p, is_in_quotes) = track_parenthes(s, is_in_quotes)
-		parenthsis += p
+		# append the parenthies
 
 		# if it is the next column then skip one 
-		if parenthsis ==0 and not is_in_quotes:
-			if components[ii+1].lower() in (',','from', ):
+		if  parenthsis == 0 and not is_in_quotes:
+			if s.lower() in (',','from', ):
+				column_obj['name'] = ' '.join(definition)
+				column_obj['definition'] = ''
+				new_idx = ii + 1
+				break
+
+			elif components[ii+1].lower() in (',','from', ):
 				column_obj['name'] = s.replace('"','')
 				column_obj['definition'] = ' '.join(definition).replace('--',' ')
 				new_idx = ii+2
 				break
 
-			# if it ends with a comma then remove it 
-			elif s.endswith(','):
-				column_obj['name'] = s.replace('"','').replace(',','')
-				column_obj['definition'] = ' '.join(definition)
-				new_idx = ii+1
-				break
-
 		if s.lower() != 'as':
 			definition.append(s)
+
+		parenthsis += p
 
 	# figure out it null
 	if column_obj['definition'] is not None and get_between_to_end_of_str(column_obj['definition'].lower(),'n') == 'ull':
@@ -335,7 +332,7 @@ def parse_filter(components, kind):
 		(p, is_in_quotes) = track_parenthes(s, is_in_quotes)
 		parenthsis += p
 
-		if parenthsis <0 or (s.lower() not in pieces and s.lower() in ('union', 'group', 'order',)):
+		if parenthsis <0 or (s.lower() not in pieces and s.lower() in ('union', 'group', 'order', 'limit', )):
 			ii -= 1
 			break
 		elif parenthsis==0 and s.lower() in pieces:
@@ -453,7 +450,7 @@ def parse_components(query_components, ctes = None):
 	if idx < len_c:
 		(new_idx, limit) = parse_filter(query_components[idx:], 'limit')
 		idx += new_idx
-		query_obj['limit'] = int(limit[0]) if limit is not None else None
+		query_obj['limit'] = int(limit) if limit is not None else None
 
 	# print(query_obj)
 	return (idx, query_obj)
@@ -614,6 +611,7 @@ def get_tables_for_autocorrect(query):
 			))
 
 	return (auto_obj, query_obj)
+
 
 
 def format_query(query):
